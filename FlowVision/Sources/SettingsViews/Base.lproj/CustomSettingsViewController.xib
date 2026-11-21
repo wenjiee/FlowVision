@@ -11,6 +11,7 @@
                 <outlet property="clickEdgeToSwitchImageCheckbox" destination="cQE-M8-Erz" id="hza-GS-mt2"/>
                 <outlet property="excludeContainerView" destination="1zQ-Z6-EOk" id="pv9-nt-J16"/>
                 <outlet property="keepFilterStateWhenSwitchFolderCheckbox" destination="lfi-Xq-yYB" id="KXv-DN-u9E"/>
+                <outlet property="showVideoBadgeCheckbox" destination="vBg-Bt-001" id="vBg-Ot-001"/>
                 <outlet property="loopBrowsingCheckbox" destination="8Z4-Ey-mOg" id="wCg-rI-Dsd"/>
                 <outlet property="radioBlack" destination="zzl-n3-awt" id="WhP-wb-Ja9"/>
                 <outlet property="radioBlackForVideo" destination="Z20-pb-GSJ" id="LAp-Ys-zIT"/>
@@ -54,6 +55,7 @@
                         <gridRow height="20" id="Hiw-Si-6Fi"/>
                         <gridRow id="3ji-xx-40N"/>
                         <gridRow id="C9g-Ns-DtL"/>
+                        <gridRow id="vBg-Rw-001"/>
                         <gridRow id="vzh-lB-BGH"/>
                         <gridRow id="Vkn-wS-gZk"/>
                     </rows>
@@ -362,6 +364,19 @@
                                 </buttonCell>
                                 <connections>
                                     <action selector="thumbnailOfFolderUseStackingToggled:" target="-2" id="dog-mo-51N"/>
+                                </connections>
+                            </button>
+                        </gridCell>
+                        <gridCell row="vBg-Rw-001" column="GGj-JC-w4E" id="vBg-Cl-001"/>
+                        <gridCell row="vBg-Rw-001" column="cs9-fm-l2F" id="vBg-Cl-002">
+                            <button key="contentView" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="vBg-Bt-001">
+                                <rect key="frame" x="99" y="65" width="200" height="18"/>
+                                <buttonCell key="cell" type="check" title="Show Video Badge" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="vBg-Bc-001">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="showVideoBadgeToggled:" target="-2" id="vBg-Ac-001"/>
                                 </connections>
                             </button>
                         </gridCell>

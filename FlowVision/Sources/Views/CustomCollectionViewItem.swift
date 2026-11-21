@@ -45,6 +45,10 @@ class CustomCollectionViewItem: NSCollectionViewItem {
         view.wantsLayer = true
         view.layer?.cornerRadius = 5.0
         view.layer?.masksToBounds = false
+
+        // 让视频标识始终显示在视频播放层之上
+        // Keep the video badge above the video playback layer
+        view.addSubview(videoFlag, positioned: .above, relativeTo: videoView)
         
         // 图像容器
         // Image container
@@ -471,24 +475,7 @@ class CustomCollectionViewItem: NSCollectionViewItem {
             imageLabel.isHidden=true
         }
         
-        let style = viewController.publicVar.profile
-        if file.type == .video && (viewController.publicVar.profile.layoutType == .grid || style.ThumbnailBorderThickness == 0) {
-            // 设置视频播放图标的大小为视图宽度的1/4
-            // Set video play icon size to 1/4 of view width
-            let iconSize = max(imageViewObj.frame.width, imageViewObj.frame.height) * 0.25
-            let iconPoint = NSPoint(
-                x: imageViewObj.frame.origin.x + (imageViewObj.frame.width - iconSize) / 2,
-                y: imageViewObj.frame.origin.y + (imageViewObj.frame.height - iconSize) / 2
-            )
-            videoFlag.frame = NSRect(origin: iconPoint, size: NSSize(width: iconSize, height: iconSize))
-            videoFlag.layer?.shadowColor = NSColor.black.cgColor
-            videoFlag.layer?.shadowOffset = CGSize(width: 0, height: 0)
-            videoFlag.layer?.shadowRadius = 3
-            videoFlag.layer?.shadowOpacity = 0.5
-            videoFlag.isHidden = false
-        }else{
-            videoFlag.isHidden = true
-        }
+        refreshVideoFlag(viewController: viewController)
         
         if (viewController.publicVar.autoPlayVisibleVideo || (viewController.publicVar.autoPlaySelectedVideo && isSelected)) && isItemVisible() {
             playVideo()
@@ -548,6 +535,57 @@ class CustomCollectionViewItem: NSCollectionViewItem {
         }
         
         updateCutDimEffect()
+    }
+
+    private func refreshVideoFlag(viewController: ViewController) {
+        guard file.type == .video && globalVar.showVideoBadge else {
+            videoFlag.isHidden = true
+            return
+        }
+
+        let layout = viewController.publicVar.profile.layoutType
+        if layout == .grid {
+            // 网格布局：保持居中的大播放图标
+            // Grid layout: keep the large centered play icon
+            videoFlag.image = NSImage(systemSymbolName: "play.circle", accessibilityDescription: "Video")?
+                .withSymbolConfiguration(.init(pointSize: 0, weight: .regular, scale: .large))
+            videoFlag.imageScaling = .scaleAxesIndependently
+            videoFlag.contentTintColor = NSColor.white.withAlphaComponent(0.8)
+            videoFlag.layer?.backgroundColor = NSColor.clear.cgColor
+            videoFlag.layer?.cornerRadius = 0
+            videoFlag.layer?.masksToBounds = false
+            videoFlag.layer?.shadowColor = NSColor.black.cgColor
+            videoFlag.layer?.shadowOffset = .zero
+            videoFlag.layer?.shadowRadius = 3
+            videoFlag.layer?.shadowOpacity = 0.5
+
+            let iconSize = max(imageViewObj.frame.width, imageViewObj.frame.height) * 0.25
+            let iconPoint = NSPoint(
+                x: imageViewObj.frame.origin.x + (imageViewObj.frame.width - iconSize) / 2,
+                y: imageViewObj.frame.origin.y + (imageViewObj.frame.height - iconSize) / 2
+            )
+            videoFlag.frame = NSRect(origin: iconPoint, size: NSSize(width: iconSize, height: iconSize))
+        } else {
+            // 瀑布流/自适应：右下角小角标
+            // Waterfall/justified: small badge at the bottom-right corner
+            videoFlag.image = NSImage(systemSymbolName: "play.fill", accessibilityDescription: "Video")?
+                .withSymbolConfiguration(.init(pointSize: 0, weight: .semibold, scale: .small))
+            videoFlag.imageScaling = .scaleProportionallyDown
+            videoFlag.contentTintColor = .white
+            videoFlag.layer?.backgroundColor = NSColor.black.withAlphaComponent(0.55).cgColor
+            videoFlag.layer?.masksToBounds = true
+            videoFlag.layer?.shadowOpacity = 0
+
+            let badgeSize = max(16, min(22, min(imageViewObj.frame.width, imageViewObj.frame.height) * 0.14))
+            let margin: CGFloat = 6
+            let x = imageViewObj.frame.maxX - badgeSize - margin
+            let y = view.isFlipped
+                ? imageViewObj.frame.maxY - badgeSize - margin
+                : imageViewObj.frame.minY + margin
+            videoFlag.frame = NSRect(x: x, y: y, width: badgeSize, height: badgeSize)
+            videoFlag.layer?.cornerRadius = badgeSize * 0.28
+        }
+        videoFlag.isHidden = false
     }
     
     func updateCutDimEffect() {

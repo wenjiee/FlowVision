@@ -461,6 +461,8 @@ class ViewController: NSViewController, NSSplitViewDelegate, NSSearchFieldDelega
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(showVideoBadgeChanged), name: .showVideoBadgeChanged, object: nil)
+        
         log("Start viewDidLoad")
         // Start viewDidLoad
         
@@ -865,10 +867,16 @@ class ViewController: NSViewController, NSSplitViewDelegate, NSSearchFieldDelega
 
     }
     
+    @objc func showVideoBadgeChanged() {
+        collectionView.reloadData()
+    }
+
     func prepareForDeinit() {
         // 在这里执行清理工作
         // Perform cleanup work here
         log("ViewController is being deinitialized")
+        
+        NotificationCenter.default.removeObserver(self, name: .showVideoBadgeChanged, object: nil)
         
         // 存储关闭的目录/文件
         // Store closed directory/file

@@ -22,6 +22,7 @@ final class CustomSettingsViewController: NSViewController, SettingsPane {
     @IBOutlet weak var usePinyinSearchCheckbox: NSButton!
     @IBOutlet weak var usePinyinInitialSearchCheckbox: NSButton!
     @IBOutlet weak var keepFilterStateWhenSwitchFolderCheckbox: NSButton!
+    @IBOutlet weak var showVideoBadgeCheckbox: NSButton!
     @IBOutlet weak var excludeContainerView: ThumbnailExcludeView!
     
     @IBOutlet weak var radioGlass: NSButton!
@@ -43,6 +44,7 @@ final class CustomSettingsViewController: NSViewController, SettingsPane {
         usePinyinSearchCheckbox.state = globalVar.usePinyinSearch ? .on : .off
         usePinyinInitialSearchCheckbox.state = globalVar.usePinyinInitialSearch ? .on : .off
         keepFilterStateWhenSwitchFolderCheckbox.state = globalVar.keepFilterStateWhenSwitchFolder ? .on : .off
+        showVideoBadgeCheckbox.state = globalVar.showVideoBadge ? .on : .off
         
         globalVar.useInternalPlayerCheckbox = self.useInternalPlayerCheckbox
         
@@ -65,6 +67,12 @@ final class CustomSettingsViewController: NSViewController, SettingsPane {
     @IBAction func randomFolderThumbToggled(_ sender: NSButton) {
         globalVar.randomFolderThumb = (sender.state == .on)
         UserDefaults.standard.set(globalVar.randomFolderThumb, forKey: "randomFolderThumb")
+    }
+
+    @IBAction func showVideoBadgeToggled(_ sender: NSButton) {
+        globalVar.showVideoBadge = (sender.state == .on)
+        UserDefaults.standard.set(globalVar.showVideoBadge, forKey: "showVideoBadge")
+        NotificationCenter.default.post(name: .showVideoBadgeChanged, object: nil)
     }
     
     @IBAction func thumbnailOfFolderUseStackingToggled(_ sender: NSButton) {

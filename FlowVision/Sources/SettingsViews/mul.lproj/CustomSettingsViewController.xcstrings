@@ -2808,6 +2808,30 @@
           }
         }
       }
+    },
+    "vBg-Bc-001.title" : {
+      "comment" : "Class = \"NSButtonCell\"; title = \"Show Video Badge\"; ObjectID = \"vBg-Bc-001\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Show Video Badge"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示视频标识"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示影片標記"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

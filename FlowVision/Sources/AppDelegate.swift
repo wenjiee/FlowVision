@@ -234,6 +234,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate, NSMenuItemVa
         if let collectionViewItemShowTooltip = UserDefaults.standard.value(forKey: "collectionViewItemShowTooltip") as? Bool {
             globalVar.collectionViewItemShowTooltip = collectionViewItemShowTooltip
         }
+        if let showVideoBadge = UserDefaults.standard.value(forKey: "showVideoBadge") as? Bool {
+            globalVar.showVideoBadge = showVideoBadge
+        }
         globalVar.myFavoritesArray = defaults.array(forKey: "globalVar.myFavoritesArray") as? [String] ?? [String]()
         
         if let savedLabels = UserDefaults.standard.array(forKey: CustomTagView.userDefaultsKey) as? [[String: Any]] {

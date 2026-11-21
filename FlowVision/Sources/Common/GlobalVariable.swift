@@ -106,6 +106,7 @@ class GlobalVar{
     var largeImageViewShowTagsAndRating = true
     var enhancedIndexEnabled = true
     var collectionViewItemShowTooltip = true
+    var showVideoBadge = true
     
     // 可记忆设置变量
     // Rememberable settings variables
@@ -158,6 +159,10 @@ class GlobalVar{
     }
 }
 var globalVar = GlobalVar()
+
+extension Notification.Name {
+    static let showVideoBadgeChanged = Notification.Name("showVideoBadgeChanged")
+}
 
 let homeDirectory = NSHomeDirectory()
 
