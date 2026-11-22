@@ -545,47 +545,42 @@ class CustomCollectionViewItem: NSCollectionViewItem {
 
         let layout = viewController.publicVar.profile.layoutType
         if layout == .grid {
-            // 网格布局：保持居中的大播放图标
-            // Grid layout: keep the large centered play icon
-            videoFlag.image = NSImage(systemSymbolName: "play.circle", accessibilityDescription: "Video")?
-                .withSymbolConfiguration(.init(pointSize: 0, weight: .regular, scale: .large))
-            videoFlag.imageScaling = .scaleAxesIndependently
-            videoFlag.contentTintColor = NSColor.white.withAlphaComponent(0.8)
-            videoFlag.layer?.backgroundColor = NSColor.clear.cgColor
-            videoFlag.layer?.cornerRadius = 0
-            videoFlag.layer?.masksToBounds = false
-            videoFlag.layer?.shadowColor = NSColor.black.cgColor
-            videoFlag.layer?.shadowOffset = .zero
-            videoFlag.layer?.shadowRadius = 3
-            videoFlag.layer?.shadowOpacity = 0.5
-
+            // 网格布局：保持原来的居中大图标
+            // Grid layout: keep the original large centered icon
             let iconSize = max(imageViewObj.frame.width, imageViewObj.frame.height) * 0.25
-            let iconPoint = NSPoint(
-                x: imageViewObj.frame.origin.x + (imageViewObj.frame.width - iconSize) / 2,
-                y: imageViewObj.frame.origin.y + (imageViewObj.frame.height - iconSize) / 2
-            )
-            videoFlag.frame = NSRect(origin: iconPoint, size: NSSize(width: iconSize, height: iconSize))
+            layoutCenteredVideoFlag(iconSize: iconSize)
         } else {
-            // 瀑布流/自适应：右下角小角标
-            // Waterfall/justified: small badge at the bottom-right corner
-            videoFlag.image = NSImage(systemSymbolName: "play.fill", accessibilityDescription: "Video")?
-                .withSymbolConfiguration(.init(pointSize: 0, weight: .semibold, scale: .small))
-            videoFlag.imageScaling = .scaleProportionallyDown
-            videoFlag.contentTintColor = .white
-            videoFlag.layer?.backgroundColor = NSColor.black.withAlphaComponent(0.55).cgColor
-            videoFlag.layer?.masksToBounds = true
-            videoFlag.layer?.shadowOpacity = 0
-
-            let badgeSize = max(16, min(22, min(imageViewObj.frame.width, imageViewObj.frame.height) * 0.14))
-            let margin: CGFloat = 6
-            let x = imageViewObj.frame.maxX - badgeSize - margin
-            let y = view.isFlipped
-                ? imageViewObj.frame.maxY - badgeSize - margin
-                : imageViewObj.frame.minY + margin
-            videoFlag.frame = NSRect(x: x, y: y, width: badgeSize, height: badgeSize)
-            videoFlag.layer?.cornerRadius = badgeSize * 0.28
+            // 瀑布流/自适应：同样居中，按短边计算并限幅，避免宽图图标过大
+            // Waterfall/justified: also centered, sized from the shorter side
+            let side = min(imageViewObj.frame.width, imageViewObj.frame.height)
+            let iconSize = min(44, max(20, side * 0.25))
+            layoutCenteredVideoFlag(iconSize: iconSize)
         }
-        videoFlag.isHidden = false
+
+        // 播放中的缩略图不显示播放图标，暂停或未播放时显示
+        // Hide the play icon while the preview is playing
+        let isPlaying = currentPlayingURL == URL(string: file.path) && avPlayerLayer?.isHidden == false
+        videoFlag.isHidden = isPlaying
+    }
+
+    private func layoutCenteredVideoFlag(iconSize: CGFloat) {
+        videoFlag.image = NSImage(systemSymbolName: "play.circle", accessibilityDescription: "Video")?
+            .withSymbolConfiguration(.init(pointSize: 0, weight: .regular, scale: .large))
+        videoFlag.imageScaling = .scaleAxesIndependently
+        videoFlag.contentTintColor = NSColor.white.withAlphaComponent(0.8)
+        videoFlag.layer?.backgroundColor = NSColor.clear.cgColor
+        videoFlag.layer?.cornerRadius = 0
+        videoFlag.layer?.masksToBounds = false
+        videoFlag.layer?.shadowColor = NSColor.black.cgColor
+        videoFlag.layer?.shadowOffset = .zero
+        videoFlag.layer?.shadowRadius = 3
+        videoFlag.layer?.shadowOpacity = 0.5
+
+        let iconPoint = NSPoint(
+            x: imageViewObj.frame.origin.x + (imageViewObj.frame.width - iconSize) / 2,
+            y: imageViewObj.frame.origin.y + (imageViewObj.frame.height - iconSize) / 2
+        )
+        videoFlag.frame = NSRect(origin: iconPoint, size: NSSize(width: iconSize, height: iconSize))
     }
     
     func updateCutDimEffect() {
@@ -779,6 +774,9 @@ class CustomCollectionViewItem: NSCollectionViewItem {
                 queuePlayer.play()
                 currentPlayingURL = URL(string: file.path)
                 avPlayerLayer?.isHidden = false
+                // 播放开始后隐藏居中播放图标
+                // Hide the centered play icon once playback starts
+                videoFlag.isHidden = true
             }
         } else {
             avPlayerLayer?.isHidden = true
@@ -794,6 +792,9 @@ class CustomCollectionViewItem: NSCollectionViewItem {
             queuePlayer?.removeAllItems()
             currentPlayingURL = nil
             avPlayerLayer?.isHidden = true
+            // 停止播放后重新显示居中播放图标
+            // Show the centered play icon again after playback stops
+            refreshVideoFlag(viewController: viewController)
         }
     }
     
